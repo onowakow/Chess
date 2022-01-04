@@ -1,39 +1,32 @@
 import pieceSymbol from "../utilities/pieceSymbol";
 
-const Square = ({ type, color, x, y, handleSelect, currentSelect }) => {
-  /* Board is rendered top down, so y value is 'reversed' 
-  There may be a more elegant way to do this, but hard-
-  coding seems fine given that the board will only be 8*8
-  */
- const yAdjust =
- y === 0
- ? 8
-      : y === 1
-      ? 7
-      : y === 2
-      ? 6
-      : y === 3
-      ? 5
-      : y === 4
-      ? 4
-      : y === 5
-      ? 3
-      : y === 6
-      ? 2
-      : y === 7
-      ? 1
-      : y === 8
-      ? 0
-      : null;
-      
+const Square = ({ player, type, color, ix, iy, handleSelect, currentSelect }) => {
+  
+  const orientIndex = (axis, index, player) => {
+    if (player === 'black') {
+      if (axis === 'x') {
+        return Math.abs(index - 7)
+      } else if (axis === 'y') {
+        return index + 1
+      }
+    } else if (player === 'white') {
+      if (axis === 'x') {
+        return index
+      } else if (axis === 'y') {
+        return Math.abs(index - 8)
+      }
+    }
+  }
+
+  // x and y correspond to the location in the main board array
+  const x = (orientIndex( 'x', ix, player ))
+  const y = (orientIndex( 'y', iy, player ))
+
   // xy corresponds to the location in the board array
-  const xy = [x, yAdjust - 1];
+  const xy = [x, y]
 
   // humanXY adjusts xy to be the traditional 'algebraic' board notation.
-  const humanXY = [
-    String.fromCharCode(x + 65),
-    yAdjust
-  ];
+  const humanXY = [String.fromCharCode(x + 65), y];
 
   const isWhite =
     (x % 2 === 0 && y % 2 === 0) || (x % 2 === 1 && y % 2 === 1) ? true : false;
@@ -43,18 +36,16 @@ const Square = ({ type, color, x, y, handleSelect, currentSelect }) => {
   };
 
   const style = {
-    border: 'none',
-    fontFamily: 'monospace',
+    border: "none",
+    fontFamily: "monospace",
     height: 48,
     width: 48,
     backgroundColor: `${isWhite === true ? "white" : "lightBlue"}`,
-    verticalAlign: 'top'
+    verticalAlign: "top",
   };
   return (
     <button onClick={handleClick} style={style}>
-      <p style={{fontSize: '2em',}}>
-      {pieceSymbol(type, color)}
-      </p>
+      <p style={{ fontSize: "2em" }}>{pieceSymbol(type, color)}</p>
     </button>
   );
 };

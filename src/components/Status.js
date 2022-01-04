@@ -5,7 +5,8 @@ const Status = ({
   humanCurrentSelect,
   handleEmpty,
   handleSet,
-  handleAddPiece
+  handleAddPiece,
+  toggleSide
 }) => {
   let x = "";
   let y = "";
@@ -20,8 +21,7 @@ const Status = ({
         Currently selected: {x}, {y}
       </div>
       <div>position in array: {humanCurrentSelect}</div>
-      <button>white side</button>
-      <button>black side</button>
+      <button onClick={toggleSide}>toggle side</button>
       <button onClick={handleEmpty}>empty board</button>
       <button onClick={handleSet}>reset board</button>
       <div style={{marginTop: '1em'}}>
