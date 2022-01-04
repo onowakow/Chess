@@ -1,7 +1,34 @@
-const Status = ({currentSelect}) => {
-  return (
-    <div>Currently selected: {currentSelect}</div>
-  )
-}
+import AddPieceForm from "./AddPieceForm";
 
-export default Status
+const Status = ({
+  currentSelect,
+  humanCurrentSelect,
+  handleEmpty,
+  handleSet,
+  handleAddPiece
+}) => {
+  let x = "";
+  let y = "";
+
+  if (currentSelect !== null) {
+    [x, y] = currentSelect;
+  }
+
+  return (
+    <>
+      <div>
+        Currently selected: {x}, {y}
+      </div>
+      <div>position in array: {humanCurrentSelect}</div>
+      <button>white side</button>
+      <button>black side</button>
+      <button onClick={handleEmpty}>empty board</button>
+      <button onClick={handleSet}>reset board</button>
+      <div style={{marginTop: '1em'}}>
+        <AddPieceForm handleAddPiece={handleAddPiece} />
+      </div>
+    </>
+  );
+};
+
+export default Status;
