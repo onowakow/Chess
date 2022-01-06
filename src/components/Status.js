@@ -8,17 +8,12 @@ const Status = ({
   handleAddPiece,
   toggleSide
 }) => {
-  let x = "";
-  let y = "";
-
-  if (currentSelect !== null) {
-    [x, y] = currentSelect;
-  }
+  const [x, y, color] = currentSelect
 
   return (
     <>
       <div>
-        Currently selected: {x}, {y}
+        Currently selected: {x}, {y}, {color}
       </div>
       <div>position in array: {humanCurrentSelect}</div>
       <button onClick={toggleSide}>toggle side</button>

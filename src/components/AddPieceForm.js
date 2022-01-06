@@ -2,8 +2,13 @@ import { useState } from 'react'
 
 const AddPieceForm = ({handleAddPiece}) => {
   const [pieceSelect, setPieceSelect] = useState('p')
+  const [color, setColor] = useState('w')
   const [xSelect, setXSelect] = useState(0)
   const [ySelect, setYSelect] = useState(0)
+
+  const handleRadio = (event) => {
+    setColor(event.target.value)
+  }
 
   const handlePieceSelect = (event) => {
     setPieceSelect(event.target.value)
@@ -19,7 +24,7 @@ const AddPieceForm = ({handleAddPiece}) => {
 
   const handleSubmit = (event) => {
     event.preventDefault()
-    handleAddPiece(pieceSelect, xSelect, ySelect)
+    handleAddPiece(color, pieceSelect, xSelect, ySelect)
   }
 
   return (
@@ -58,6 +63,14 @@ const AddPieceForm = ({handleAddPiece}) => {
             <option value={6}>7</option>
             <option value={7}>8</option>
           </select>
+        </label>
+        <label>
+          white
+          <input name='color-radio' value='w' onChange={handleRadio} type='radio' checked={color==='w'} />
+        </label>
+        <label>
+          black
+          <input name='color-radio' value='b' onChange={handleRadio} checked={color==='b'} type='radio' />
         </label>
         <button type="submit">add piece</button>
       </form>
