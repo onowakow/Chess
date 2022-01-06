@@ -2,7 +2,7 @@ import pieceSymbol from "../utilities/pieceSymbol";
 import matchingLegalMove from '../utilities/matchingLegalMove'
 import isLegalCapture from "../utilities/isLegalCapture";
 
-const Square = ({ player, type, color, ix, iy, handleSelect, legalMoves }) => {
+const Square = ({ player, type, color, ix, iy, handleHover, legalMoves }) => {
   const orientIndex = (axis, index, player) => {
     if (player === "b") {
       if (axis === "x") {
@@ -44,8 +44,8 @@ const Square = ({ player, type, color, ix, iy, handleSelect, legalMoves }) => {
   const isWhite =
     (x % 2 === 0 && y % 2 === 0) || (x % 2 === 1 && y % 2 === 1) ? true : false;
 
-  const handleClick = () => {
-    handleSelect(x, y, color, humanXY);
+  const handleMouseOver = () => {
+    handleHover(type, x, y, color, humanXY);
   };
 
   const style = {
@@ -65,7 +65,7 @@ const Square = ({ player, type, color, ix, iy, handleSelect, legalMoves }) => {
     verticalAlign: "top",
   };
   return (
-    <button onClick={handleClick} style={style}>
+    <button onMouseOver={handleMouseOver} style={style}>
       <p style={{ fontSize: "2em" }}>{pieceSymbol(type, color)}</p>
     </button>
   );

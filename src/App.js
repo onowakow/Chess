@@ -5,13 +5,13 @@ import Board from './components/Board'
 import empty from './presets/empty'
 import traditional from "./presets/traditional";
 import placePiece from './utilities/placePiece'
-import calculatePossibleMovesBishop from "./utilities/calculatePossibleMovesBishop";
+import calculatePossibleMoves from "./utilities/calculatePossibleMoves";
 
 function App() {
   const [board, setBoard] = useState(traditional);
   const [currentSelect, setCurrentSelect] = useState([]);
   const [humanCurrentSelect, setHumanCurrentSelect] = useState(null);
-  const [player, setPlayer] = useState('b')
+  const [player, setPlayer] = useState('w')
   const [legalMoves, setLegalMoves] = useState([])
 
   const toggleSide = () => {
@@ -22,10 +22,10 @@ function App() {
     setBoard(placePiece(board, color, piece, x, y))
   }
 
-  const handleSelect = (x, y, color, humanXY) => {
+  const handleHover = (type, x, y, color, humanXY) => {
     // Only calculate legal moves if a piece (only pieces have color). else, clear legalMoves
     if (color !== undefined) {
-      setLegalMoves(calculatePossibleMovesBishop(board, x, y, color))
+      setLegalMoves(calculatePossibleMoves(board, type, x, y, color))
     } else {
       setLegalMoves([])
     }
@@ -34,10 +34,12 @@ function App() {
   };
 
   const handleEmpty = () => {
+    setLegalMoves([])
     setBoard(empty())
   }
 
   const handleSet = () => {
+    setLegalMoves([])
     setBoard(traditional())
   }
 
@@ -47,7 +49,7 @@ function App() {
 
   return (
     <div style={{ display: "inline-block" }}>
-      <Board legalMoves={legalMoves} player={player} board={board} handleSelect={handleSelect} currentSelect={currentSelect}/>
+      <Board legalMoves={legalMoves} player={player} board={board} handleHover={handleHover} currentSelect={currentSelect}/>
       <div>
         <Status
           toggleSide={toggleSide}

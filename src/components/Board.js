@@ -1,6 +1,6 @@
 import Square from './Square'
 
-const Board = ({handleSelect, currentSelect, board, player, legalMoves}) => {
+const Board = ({handleHover, currentSelect, board, player, legalMoves}) => {
   
   const orientBoard = ({player}) => {
     if (player === 'w') {
@@ -32,7 +32,7 @@ const Board = ({handleSelect, currentSelect, board, player, legalMoves}) => {
                         ix={ix}
                         iy={iy}
                         player={player}
-                        handleSelect={handleSelect}
+                        handleHover={handleHover}
                         type={type}
                         color={color}
                       />
