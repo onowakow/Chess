@@ -1,25 +1,58 @@
 import AddPieceForm from "./AddPieceForm";
+import pieceSymbol from "../utilities/pieceSymbol";
 
 const Status = ({
-  currentSelect,
+  currentHover,
   humanCurrentSelect,
   handleEmpty,
   handleSet,
   handleAddPiece,
-  toggleSide
+  toggleSide,
+  toggleHover,
+  blackCaptures,
+  whiteCaptures,
 }) => {
-  const [x, y, color] = currentSelect
+  const [x, y, color] = currentHover;
+
+  const displayCaptures = (captures) => {
+    return captures.map((capture, i) => {
+      const [piece, color] = capture;
+
+      return (
+        <div
+          key={i}
+          style={{
+            display: "inline-block",
+            fontFamily: "monospace",
+            fontSize: "2em",
+          }}
+        >
+          {pieceSymbol(piece, color)}
+        </div>
+      );
+    })
+  }
 
   return (
     <>
+      <div>
+        {displayCaptures(blackCaptures)}
+      </div>
+      <div>
+        {displayCaptures(whiteCaptures)}
+      </div>
+      <div>
+        {}
+      </div>
       <div>
         Currently selected: {x}, {y}, {color}
       </div>
       <div>position in array: {humanCurrentSelect}</div>
       <button onClick={toggleSide}>toggle side</button>
+      <button onClick={toggleHover}>show legal moves</button>
       <button onClick={handleEmpty}>empty board</button>
       <button onClick={handleSet}>reset board</button>
-      <div style={{marginTop: '1em'}}>
+      <div style={{ marginTop: "1em" }}>
         <AddPieceForm handleAddPiece={handleAddPiece} />
       </div>
     </>

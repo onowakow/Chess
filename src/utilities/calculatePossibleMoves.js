@@ -121,10 +121,8 @@ const calculatePossibleMoves = (board, pieceType, x, y, pieceColor) => {
         if (Math.abs(vector[0]) === 2) {
           // split pawn behavior by color
           if (pieceColor === 'w') {
-            console.log(x)
             // if pawn is not on the second row...
             if (y !== 1) {
-              console.log('returning')
               return
             }
           } else if (pieceColor === 'b') {

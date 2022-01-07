@@ -1,47 +1,158 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useState } from "react";
 import Status from "./components/Status";
-import Board from './components/Board'
-import empty from './presets/empty'
+import Board from "./components/Board";
+import empty from "./presets/empty";
 import traditional from "./presets/traditional";
-import placePiece from './utilities/placePiece'
+import placePiece from "./utilities/placePiece";
 import calculatePossibleMoves from "./utilities/calculatePossibleMoves";
+import movePiece from "./utilities/movePiece";
+
+const blankSelect = {
+  legalMoves: null,
+  position: null,
+  color: null,
+  piece: null,
+};
 
 function App() {
-  const [board, setBoard] = useState(traditional);
-  const [currentSelect, setCurrentSelect] = useState([]);
+  const [board, setBoard] = useState([traditional]);
+  const [currentHover, setCurrentHover] = useState([]);
+
+  // current turn in the game.
+  const [turn, setTurn] = useState("w");
+
+  // toggle hover displaying possible plays on board
+  const [isHover, setIsHover] = useState(true);
+
+  // tracks when a player selects own piece
+  const [ownSelect, setOwnSelect] = useState(blankSelect);
+
+  // not a completely necessary state. may refactor later
   const [humanCurrentSelect, setHumanCurrentSelect] = useState(null);
-  const [player, setPlayer] = useState('w')
-  const [legalMoves, setLegalMoves] = useState([])
+  const [boardSide, setBoardSide] = useState("w");
+  const [legalMoves, setLegalMoves] = useState([]);
+
+  // white captures are white pieces captured by black.
+  const [whiteCaptures, setWhiteCaptures] = useState([]);
+  const [blackCaptures, setBlackCaptures] = useState([])
+
+  const latestBoardIndex = board.length -1
 
   const toggleSide = () => {
-    setPlayer(player === 'w' ? 'b' : 'w')
-  }
+    setBoardSide(boardSide === "w" ? "b" : "w");
+  };
+
+  const toggleHover = () => {
+    setIsHover(isHover ? false : true);
+  };
 
   const handleAddPiece = (color, piece, x, y) => {
-    setBoard(placePiece(board, color, piece, x, y))
-  }
+    setBoard(placePiece(board[latestBoardIndex], color, piece, x, y));
+  };
 
-  const handleHover = (type, x, y, color, humanXY) => {
-    // Only calculate legal moves if a piece (only pieces have color). else, clear legalMoves
-    if (color !== undefined) {
-      setLegalMoves(calculatePossibleMoves(board, type, x, y, color))
+  // ************Game play*******************************
+  /* handleSelect passes select data. Previous select data is set in
+  ownSelect */
+
+  const handleSelect = (x, y, color, piece) => {
+    let destination;
+    // having scope issue with piece
+
+    // if player selects own color set ownSelect.
+    if (color === turn) {
+      const origin = [x, y];
+      
+      // if a piece has already been selected
+      if (ownSelect.position !== null) {
+        const [prevSelectX, prevSelectY] = ownSelect.position
+        // if player selects same piece twice, deselect.
+        if (prevSelectX === x && prevSelectY === y) {
+          setOwnSelect(blankSelect)
+          return
+        }
+      }
+
+      /* having issues here. I want seeing legal moves to be toggle-able,
+      but currently legal moves are always displayed (at square level) */
+      setLegalMoves(calculatePossibleMoves(board[latestBoardIndex], piece, x, y, color));
+
+      setOwnSelect({
+        legalMoves: legalMoves,
+        position: origin,
+        color: color,
+        piece: piece,
+      });
     } else {
-      setLegalMoves([])
+      // if user has not selected own piece yet, return
+      if (ownSelect.position === null) {
+        return;
+
+      } else {
+        // Check if requested move is legal.
+
+        // Find legal move. Undefined if not found.
+        const legalMove = ownSelect.legalMoves.find(
+          (move) => move[0] === x && move[1] === y
+        );
+        
+        /* if LEGAL move is made */
+        if (legalMove !== undefined) {
+          let ownOrigin = ownSelect.position;
+          let ownPiece = ownSelect.piece;
+          let ownColor = ownSelect.color;
+          destination = [x, y];
+          
+          // Check if legal move is a capture
+          if (legalMove[2] === "c") {
+            if (turn === 'w') {
+              setBlackCaptures([ ...blackCaptures, [piece, color] ])
+            } else {
+              setWhiteCaptures([ ...whiteCaptures, [piece, color] ])
+            }
+            
+            // check if King has been captured.
+            if (piece === 'K') {
+              console.log(turn, "wins")
+            }
+          }
+
+          const updatedBoard = movePiece(board[latestBoardIndex], ownColor, ownPiece, ownOrigin, destination)
+          setBoard([...board, updatedBoard]);
+          setOwnSelect(blankSelect);
+          setLegalMoves([]);
+          setTurn(turn === 'w' ? 'b' : 'w')
+
+        } else {
+          console.log("move is illegal");
+        }
+      }
     }
-    setCurrentSelect([x, y, color ? color : null]);
-    setHumanCurrentSelect(humanXY);
+  };
+  // ************Game play above**************************
+
+  // Displays legalMoves only if isHover and if a piece is not selected
+  const handleHover = (type, x, y, color, humanXY) => {
+    if (ownSelect.position === null) {
+      if (color !== undefined) {
+        setLegalMoves(calculatePossibleMoves(board[latestBoardIndex], type, x, y, color));
+      } else {
+        setLegalMoves([]);
+      }
+      setCurrentHover([x, y, color ? color : null]);
+      setHumanCurrentSelect(humanXY);
+    }
   };
 
   const handleEmpty = () => {
-    setLegalMoves([])
-    setBoard(empty())
-  }
+    setLegalMoves([]);
+    setBoard(empty());
+  };
 
   const handleSet = () => {
-    setLegalMoves([])
-    setBoard(traditional())
-  }
+    setLegalMoves([]);
+    setBoard(traditional());
+  };
 
   // Board array is organized so that Board[0][0] is spot A1
   // To orient the board properly, a shallow reverse is made (order of rows reversed)
@@ -49,12 +160,23 @@ function App() {
 
   return (
     <div style={{ display: "inline-block" }}>
-      <Board legalMoves={legalMoves} player={player} board={board} handleHover={handleHover} currentSelect={currentSelect}/>
+      <Board
+        isHover={isHover}
+        selectedPiece={ownSelect.position}
+        legalMoves={legalMoves}
+        boardSide={boardSide}
+        board={board[latestBoardIndex]}
+        handleSelect={handleSelect}
+        handleHover={handleHover}
+      />
       <div>
         <Status
+          blackCaptures={blackCaptures}
+          whiteCaptures={whiteCaptures}
+          toggleHover={toggleHover}
           toggleSide={toggleSide}
           humanCurrentSelect={humanCurrentSelect}
-          currentSelect={currentSelect}
+          currentHover={currentHover}
           handleEmpty={handleEmpty}
           handleSet={handleSet}
           handleAddPiece={handleAddPiece}
