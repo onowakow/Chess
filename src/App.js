@@ -170,7 +170,7 @@ function App() {
   // To orient for black, a reverse is made only on the columns
 
   return (
-    <div style={{ display: "inline-block" }}>
+    <div>
       <Board
         isHover={isHover}
         selectedPiece={ownSelect.position}

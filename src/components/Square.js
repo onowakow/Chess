@@ -1,4 +1,4 @@
-import pieceSymbol from "../utilities/pieceSymbol";
+import pieceSVG from "../utilities/pieceSVG";
 import matchingLegalMove from "../utilities/matchingLegalMove";
 import isLegalCapture from "../utilities/isLegalCapture";
 
@@ -61,34 +61,85 @@ const Square = ({
     isSelect = selectedX === x && selectedY === y ? true : false;
   }
 
-  const style = {
-    border: `${isSelect ? "3px solid black" : "none"}`,
-    fontFamily: "monospace",
-    height: 48,
-    width: 48,
-    backgroundColor: `${
-      isHover
-        ? isMoveLegalCapture === true
-          ? "red"
-          : move !== false
-          ? "blue"
-          : isWhite === true
-          ? "white"
-          : "lightBlue"
-        : isWhite === true
-        ? "white"
-        : "lightBlue"
-    }`,
-    verticalAlign: "top",
+  // default square color
+  const squareColor = isWhite === true ? "white" : "lightBlue";
+
+  const square = {
+    width: "12.5%",
+    paddingBottom: "12.5%",
+    display: "inline-block",
+    position: "relative",
+    overflow: "hidden",
+    float: "left",
+    backgroundColor: squareColor,
   };
+
+  const content = {
+    position: "absolute",
+    height: "100%",
+    width: "100%",
+  };
+
+  // displays when piece is selected
+  const selectBorder = {
+    height: "100%",
+    border: `${isSelect ? "3px solid black" : "none"}`,
+  };
+
+  // displays possible move token
+  const possibleMove = {
+    height: "30%",
+    width: "30%",
+    margin: "35%",
+    borderRadius: "35%",
+    backgroundColor: `${
+      isHover ? (move !== false ? "blue" : squareColor) : null
+    }`,
+  };
+
+  const possibleCapture = {
+    height: "100%",
+    width: "100%",
+    backgroundColor: `${
+      isHover ? 'red' : null
+    }`,
+  };
+
+  const possibleCaptureTwo = {
+    height: "100%",
+    width: "100%",
+    backgroundColor: squareColor,
+    borderRadius: "25%",
+  };
+
   return (
-    <button
+    <div
       onMouseOver={handleMouseOver}
       onClick={() => handleSelect(x, y, color, piece)}
-      style={style}
+      style={square}
+      key={ix}
     >
-      <p style={{ fontSize: "2em" }}>{pieceSymbol(piece, color)}</p>
-    </button>
+      {isMoveLegalCapture ? (
+        <div style={content}>
+          <div style={possibleCapture}>
+            <div style={content}>
+              <div style={possibleCaptureTwo} />
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div style={content}>
+          <div style={possibleMove} />
+        </div>
+      )}
+
+      <div style={content}>
+        <img src={pieceSVG(piece, color)} width="100%" alt="white queen" />
+      </div>
+      <div style={content}>
+        <div style={selectBorder} />
+      </div>
+    </div>
   );
 };
 
