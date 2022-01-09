@@ -15,6 +15,10 @@ const blankSelect = {
   piece: null,
 };
 
+// data should be stored for each turn. This data includes the locations of 
+// board pieces as well as if any captures took place. Perhaps including the
+// specific turn could also be helpful
+
 function App() {
   const [board, setBoard] = useState([traditional]);
   const [currentHover, setCurrentHover] = useState([]);
@@ -51,14 +55,21 @@ function App() {
     setBoard(placePiece(board[latestBoardIndex], color, piece, x, y));
   };
 
+  // allows user to switch between boards
+  const handlePrevMove = () => {
+    // set turn to previous turn.
+    setTurn(turn === 'w' ? 'b' : 'w')
+    setOwnSelect(blankSelect)
+    setLegalMoves([])
+  }
+  const handleNextMove = () => {}
+
+
   // ************Game play*******************************
   /* handleSelect passes select data. Previous select data is set in
   ownSelect */
 
   const handleSelect = (x, y, color, piece) => {
-    let destination;
-    // having scope issue with piece
-
     // if player selects own color set ownSelect.
     if (color === turn) {
       const origin = [x, y];
@@ -66,6 +77,7 @@ function App() {
       // if a piece has already been selected
       if (ownSelect.position !== null) {
         const [prevSelectX, prevSelectY] = ownSelect.position
+
         // if player selects same piece twice, deselect.
         if (prevSelectX === x && prevSelectY === y) {
           setOwnSelect(blankSelect)
@@ -73,8 +85,6 @@ function App() {
         }
       }
 
-      /* having issues here. I want seeing legal moves to be toggle-able,
-      but currently legal moves are always displayed (at square level) */
       setLegalMoves(calculatePossibleMoves(board[latestBoardIndex], piece, x, y, color));
 
       setOwnSelect({
@@ -96,12 +106,13 @@ function App() {
           (move) => move[0] === x && move[1] === y
         );
         
-        /* if LEGAL move is made */
+        // if LEGAL move is made
         if (legalMove !== undefined) {
-          let ownOrigin = ownSelect.position;
-          let ownPiece = ownSelect.piece;
-          let ownColor = ownSelect.color;
-          destination = [x, y];
+          // created new vars to hopefully improve readability
+          const ownOrigin = ownSelect.position;
+          const ownPiece = ownSelect.piece;
+          const ownColor = ownSelect.color;
+          const destination = [x, y];
           
           // Check if legal move is a capture
           if (legalMove[2] === "c") {
@@ -146,12 +157,12 @@ function App() {
 
   const handleEmpty = () => {
     setLegalMoves([]);
-    setBoard(empty());
+    setBoard([empty]);
   };
 
   const handleSet = () => {
     setLegalMoves([]);
-    setBoard(traditional());
+    setBoard([traditional]);
   };
 
   // Board array is organized so that Board[0][0] is spot A1
@@ -171,6 +182,8 @@ function App() {
       />
       <div>
         <Status
+          handlePrevMove={handlePrevMove}
+          handleNextMove={handleNextMove}
           blackCaptures={blackCaptures}
           whiteCaptures={whiteCaptures}
           toggleHover={toggleHover}
