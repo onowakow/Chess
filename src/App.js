@@ -85,7 +85,8 @@ function App() {
         }
       }
 
-      setLegalMoves(calculatePossibleMoves(board[latestBoardIndex], piece, x, y, color));
+      // setting and accessing legal moves from state was having occasional async issues. Storing locally instead
+      const legalMoves = calculatePossibleMoves(board[latestBoardIndex], piece, x, y, color)
 
       setOwnSelect({
         legalMoves: legalMoves,

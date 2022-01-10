@@ -18,14 +18,13 @@ const Board = ({
   };
 
   return (
-    <div id="board" style={{ height: '95vh', width: '95vh', margin: '2.5vh', border: '3px solid'}}>
+    <div id="board" style={{ height: '95vh', width: '95vh', maxHeight: '92.5vw', maxWidth: '92.5vw', margin: '2.5vh', border: '3px solid'}}>
       {orientBoard({ boardSide }).map((row, iy) => {
         return (
           <div key={iy} className="rail" style={{ height: "12.5%"}}>
             {row.map((square, ix) => {
               // destructure here instead #############
-              const piece = square[0];
-              const color = square[1];
+              const [piece, color] = square
               return (
                 <Square
                   key={ix}
