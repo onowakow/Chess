@@ -1,0 +1,57 @@
+h1 {
+  font-size: 1.75em !important;
+}
+
+#root {
+  padding-bottom: 1em
+}
+
+h2 {
+  font-size: 1.5em !important;
+}
+
+h3 {
+  font-size: 1.20em !important;
+}
+
+.rounded-rectangle {
+  margin: 0 auto;
+  border-radius: 5px;
+  max-width: 80vh;
+  width: 100%;
+  text-align: center;
+  padding: .5em;
+  border: none
+}
+
+#reset-button:hover {
+  background-color: #b6e2dd;
+}
+
+.info-box {
+    background-color: white;
+    color: #283044;
+    padding: .5em;
+    border-radius: 3px;
+    border: none;
+    margin-top: .5em !important;
+}
+
+.form {
+  background-color: #f0f9f8;
+  border: 1px solid #a7dcd6;
+  padding: .5em;
+  border-radius: 5px;
+}
+  
+.basic-button {
+  width: 100%;
+  display: block;
+  border-radius: 3px;
+  border: none;
+  background-color: bisque;
+}
+
+.submit-button:hover {
+  background-color: lightcoral;
+}

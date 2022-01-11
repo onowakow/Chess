@@ -1,38 +1,42 @@
-import { useState } from 'react'
+import { useState } from "react";
 
-const AddPieceForm = ({handleAddPiece}) => {
-  const [pieceSelect, setPieceSelect] = useState('p')
-  const [color, setColor] = useState('w')
-  const [xSelect, setXSelect] = useState(0)
-  const [ySelect, setYSelect] = useState(0)
+const AddPieceForm = ({ handleAddPiece }) => {
+  const [pieceSelect, setPieceSelect] = useState("p");
+  const [color, setColor] = useState("w");
+  const [xSelect, setXSelect] = useState(0);
+  const [ySelect, setYSelect] = useState(0);
 
   const handleRadio = (event) => {
-    setColor(event.target.value)
-  }
+    setColor(event.target.value);
+  };
 
   const handlePieceSelect = (event) => {
-    setPieceSelect(event.target.value)
-  }
+    setPieceSelect(event.target.value);
+  };
 
   const handleXSelect = (event) => {
-    setXSelect(event.target.value)
-  }
+    setXSelect(event.target.value);
+  };
 
   const handleYSelect = (event) => {
-    setYSelect(event.target.value)
-  }
+    setYSelect(event.target.value);
+  };
 
   const handleSubmit = (event) => {
-    event.preventDefault()
-    handleAddPiece(color, pieceSelect, xSelect, ySelect)
-  }
+    event.preventDefault();
+    handleAddPiece(color, pieceSelect, xSelect, ySelect);
+  };
 
   return (
     <>
-      add a piece
-      <form id="add-piece-form" onSubmit={handleSubmit}>
+      <form className="form" id="add-piece-form" onSubmit={handleSubmit}>
         <label>
-          <select value={pieceSelect} onChange={handlePieceSelect} id="piece-select">
+          Piece:{" "}
+          <select
+            value={pieceSelect}
+            onChange={handlePieceSelect}
+            id="piece-select"
+          >
             <option value="p">Pawn</option>
             <option value="R">Rook</option>
             <option value="N">Knight</option>
@@ -41,8 +45,8 @@ const AddPieceForm = ({handleAddPiece}) => {
             <option value="K">King</option>
           </select>
         </label>
-        <label>
-          @
+        <label style={{ display: "block" }}>
+          Location:{" "}
           <select value={xSelect} onChange={handleXSelect} id="select-x">
             <option value={0}>A</option>
             <option value={1}>B</option>
@@ -64,15 +68,29 @@ const AddPieceForm = ({handleAddPiece}) => {
             <option value={7}>8</option>
           </select>
         </label>
+          Color: {" "} 
         <label>
-          white
-          <input name='color-radio' value='w' onChange={handleRadio} type='radio' checked={color==='w'} />
+          white {" "}
+          <input
+            name="color-radio"
+            value="w"
+            onChange={handleRadio}
+            type="radio"
+            checked={color === "w"}
+          />
         </label>
+        <div style={{display: 'inline-block', width: '.5em'}}></div>
         <label>
-          black
-          <input name='color-radio' value='b' onChange={handleRadio} checked={color==='b'} type='radio' />
+          black {" "}
+          <input
+            name="color-radio"
+            value="b"
+            onChange={handleRadio}
+            checked={color === "b"}
+            type="radio"
+          />
         </label>
-        <button type="submit">add piece</button>
+        <button id='submit-button' className='basic-button' type="submit">add piece</button>
       </form>
     </>
   );

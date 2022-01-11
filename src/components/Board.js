@@ -21,12 +21,14 @@ const Board = ({
   return (
     <div
       id="board"
+      className='main-unit'
       style={{
-        height: "85vh",
-        width: "85vh",
-        maxHeight: "92.5vw",
-        maxWidth: "92.5vw",
+        height: '80vh',
+        width: "80vh",
+        maxHeight: "80vw",
+        maxWidth: "80vw",
         margin: "0 auto",
+        marginTop: '1em',
         border: "6px solid",
         borderRadius: "3px",
       }}

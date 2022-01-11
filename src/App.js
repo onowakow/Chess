@@ -6,9 +6,10 @@ import empty from "./presets/empty";
 import traditional from "./presets/traditional";
 import placePiece from "./utilities/placePiece";
 import calculatePossibleMoves from "./utilities/calculatePossibleMoves";
-import movePiece from "./utilities/movePiece";
 import TurnDisplay from "./components/TurnDisplay";
+import ResetButton from "./components/ResetButton";
 import { Container, Row, Col } from "react-bootstrap";
+import movePiece from "./utilities/movePiece";
 
 const blankSelect = {
   legalMoves: null,
@@ -25,6 +26,12 @@ function App() {
   const [board, setBoard] = useState([traditional]);
   const [currentHover, setCurrentHover] = useState([]);
 
+  // Keeps track of win (false, 'w', or 'b')
+  const [win, setWin] = useState(false);
+
+  // Set if board can be edited.
+  const [isReadOnly, setIsReadOnly] = useState(false);
+
   // current turn in the game.
   const [turn, setTurn] = useState("w");
 
@@ -35,7 +42,7 @@ function App() {
   const [ownSelect, setOwnSelect] = useState(blankSelect);
 
   // not a completely necessary state. may refactor later
-  const [humanCurrentSelect, setHumanCurrentSelect] = useState(null);
+  const [algebraicCurrentHover, setAlgebraicCurrentHover] = useState(['A', 1]);
   const [boardSide, setBoardSide] = useState("w");
   const [legalMoves, setLegalMoves] = useState([]);
 
@@ -54,7 +61,8 @@ function App() {
   };
 
   const handleAddPiece = (color, piece, x, y) => {
-    setBoard(placePiece(board[latestBoardIndex], color, piece, x, y));
+    const updatedBoard = placePiece(board[latestBoardIndex], color, piece, x, y)
+    setBoard([...board, updatedBoard]);
   };
 
   // allows user to switch between boards
@@ -67,29 +75,36 @@ function App() {
   const handleNextMove = () => {};
 
   // ************Game play*******************************
-  /* handleSelect passes select data. Previous select data is set in
-  ownSelect */
-
-  const handleSelect = (x, y, color, piece) => {
+  const handleSelect = (
+    x, 
+    y, 
+    color, 
+    piece
+  ) => {
+    // Stops handleSelect from modifying the board. For wins and history.
+    if (isReadOnly === true || win !== false) {
+      return
+    }
+  
     // if player selects own color set ownSelect.
     if (color === turn) {
       const origin = [x, y];
-
+  
       // if a piece has already been selected
       if (ownSelect.position !== null) {
         const [prevSelectX, prevSelectY] = ownSelect.position;
-
+  
         // if player selects same piece twice, deselect.
         if (prevSelectX === x && prevSelectY === y) {
           setOwnSelect(blankSelect);
           return;
         }
       }
-
+  
       setLegalMoves(
         calculatePossibleMoves(board[latestBoardIndex], piece, x, y, color)
       );
-
+  
       setOwnSelect({
         legalMoves: calculatePossibleMoves(
           board[latestBoardIndex],
@@ -112,7 +127,7 @@ function App() {
         const legalMove = ownSelect.legalMoves.find(
           (move) => move[0] === x && move[1] === y
         );
-
+  
         // if LEGAL move is made
         if (legalMove !== undefined) {
           // created new vars to hopefully improve readability
@@ -120,7 +135,7 @@ function App() {
           const ownPiece = ownSelect.piece;
           const ownColor = ownSelect.color;
           const destination = [x, y];
-
+  
           // Check if legal move is a capture
           if (legalMove[2] === "c") {
             if (turn === "w") {
@@ -128,13 +143,14 @@ function App() {
             } else {
               setWhiteCaptures([...whiteCaptures, [piece, color]]);
             }
-
+  
             // check if King has been captured.
             if (piece === "K") {
               console.log(turn, "wins");
+              setWin(turn)
             }
           }
-
+  
           const updatedBoard = movePiece(
             board[latestBoardIndex],
             ownColor,
@@ -152,6 +168,7 @@ function App() {
       }
     }
   };
+  
   // ************Game play above**************************
 
   // Displays legalMoves only if isHover and if a piece is not selected
@@ -165,7 +182,7 @@ function App() {
         setLegalMoves([]);
       }
       setCurrentHover([x, y, color ? color : null]);
-      setHumanCurrentSelect(humanXY);
+      setAlgebraicCurrentHover(humanXY);
     }
   };
 
@@ -197,7 +214,8 @@ function App() {
             handleSelect={handleSelect}
             handleHover={handleHover}
           />
-          <TurnDisplay turn={turn} />
+          <TurnDisplay win={win} turn={turn} />
+          <ResetButton win={win} />
         </Col>
         <Col>
           <Status
@@ -207,7 +225,7 @@ function App() {
             whiteCaptures={whiteCaptures}
             toggleHover={toggleHover}
             toggleSide={toggleSide}
-            humanCurrentSelect={humanCurrentSelect}
+            algebraicCurrentHover={algebraicCurrentHover}
             currentHover={currentHover}
             handleEmpty={handleEmpty}
             handleSet={handleSet}

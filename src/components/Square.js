@@ -62,7 +62,7 @@ const Square = ({
   }
 
   // default square color
-  const squareColor = isWhite === true ? "white" : "lightBlue";
+  const squareColor = isWhite === true ? "white" : "#a6c9b0";
 
   const square = {
     width: "12.5%",

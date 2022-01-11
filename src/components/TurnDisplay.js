@@ -1,28 +1,37 @@
-const TurnDisplay = ({ turn }) => {
+const TurnDisplay = ({ turn, win }) => {
   //const text = turn === 'w' ? 'White\'s turn' : 'Black\'s turn'
   let text;
   let bgColor;
   let textColor;
 
-  if (turn === 'w') {
-    text = 'White\'s turn'
-    bgColor = '#f2f4f7'
-    textColor = '#283044'
+  if (win === false) {
+    if (turn === 'w') {
+      text = 'White\'s turn'
+      bgColor = '#f2f4f7'
+      textColor = '#283044'
+    } else {
+      text = 'Black\'s turn'
+      bgColor = '#283044'
+      textColor = '#f2f4f7'
+    }
   } else {
-    text = 'Black\'s turn'
-    bgColor = '#283044'
-    textColor = '#f2f4f7'
+    bgColor = '#FF8811'
+    textColor = 'white'
+
+    if (win === 'w') {
+      text = 'White wins!'
+    } else {
+      text = 'Black wins!'
+    }
   }
 
+
   return (
-    <div style={{
+    <div className='rounded-rectangle'
+      style={{
       backgroundColor: bgColor,
-      borderRadius: '5px',
-      width: '100%',
       color: textColor,
-      textAlign: 'center',
-      padding: '.5em',
-      marginTop: '1em',
+      marginTop: 5,
     }}>
       {text}
     </div>
