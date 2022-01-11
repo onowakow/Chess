@@ -1,5 +1,5 @@
 import AddPieceForm from "./AddPieceForm";
-import pieceSymbol from "../utilities/pieceSymbol";
+import DisplayCaptures from "./DisplayCaptures";
 
 const Status = ({
   currentHover,
@@ -16,35 +16,13 @@ const Status = ({
 }) => {
   const [x, y, color] = currentHover;
 
-  const displayCaptures = (captures) => {
-    return captures.map((capture, i) => {
-      const [piece, color] = capture;
-
-      return (
-        <div
-          key={i}
-          style={{
-            display: "inline-block",
-            fontFamily: "monospace",
-            fontSize: "2em",
-          }}
-        >
-          {pieceSymbol(piece, color)}
-        </div>
-      );
-    })
-  }
-
   return (
     <>
       <div>
-        {displayCaptures(blackCaptures)}
+        <DisplayCaptures captures={whiteCaptures} />
       </div>
       <div>
-        {displayCaptures(whiteCaptures)}
-      </div>
-      <div>
-        {}
+        <DisplayCaptures captures={blackCaptures} />
       </div>
       <div>
         Currently selected: {x}, {y}, {color}

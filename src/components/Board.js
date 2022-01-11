@@ -1,6 +1,7 @@
 import Square from "./Square";
 
 const Board = ({
+  turn,
   selectedPiece,
   handleHover,
   board,
@@ -18,13 +19,24 @@ const Board = ({
   };
 
   return (
-    <div id="board" style={{ height: '95vh', width: '95vh', maxHeight: '92.5vw', maxWidth: '92.5vw', margin: '2.5vh', border: '3px solid'}}>
+    <div
+      id="board"
+      style={{
+        height: "85vh",
+        width: "85vh",
+        maxHeight: "92.5vw",
+        maxWidth: "92.5vw",
+        margin: "0 auto",
+        border: "6px solid",
+        borderRadius: "3px",
+      }}
+    >
       {orientBoard({ boardSide }).map((row, iy) => {
         return (
-          <div key={iy} className="rail" style={{ height: "12.5%"}}>
+          <div key={iy} className="rail" style={{ height: "12.5%" }}>
             {row.map((square, ix) => {
               // destructure here instead #############
-              const [piece, color] = square
+              const [piece, color] = square;
               return (
                 <Square
                   key={ix}
