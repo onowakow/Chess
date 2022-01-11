@@ -1,7 +1,8 @@
-const ResetButton = ({ win }) => {
+const ResetButton = ({ win, handleNewGame }) => {
   if (win !== false) {
     return (
-      <button
+      <div
+        onClick={handleNewGame}
         id='reset-button'
         className="rounded-rectangle"
         style={{
@@ -10,7 +11,7 @@ const ResetButton = ({ win }) => {
         }}
       >
         new game
-      </button>
+      </div>
     );
   } else return null;
 };

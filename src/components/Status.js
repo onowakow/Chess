@@ -9,7 +9,6 @@ const Status = ({
   handleSet,
   handleAddPiece,
   toggleSide,
-  toggleHover,
   blackCaptures,
   whiteCaptures,
   handlePrevMove,
@@ -17,16 +16,15 @@ const Status = ({
 }) => {
   const [x, y] = algebraicCurrentHover;
 
-  const coordinates = currentHover !== [] 
-    ? (`cursor: ${x}, ${y}`) : null
+  const coordinates = currentHover !== [] ? `cursor: ${x}, ${y}` : null;
 
   return (
     <>
       <Container
         style={{
-          height: "80vh",
+          minHeight: "80vh",
           marginTop: "1em",
-          minWidth: "200px",
+          minWidth: "300px",
           borderRadius: "5px",
           color: "#f2f4f7",
           backgroundColor: "#283044",
@@ -35,9 +33,11 @@ const Status = ({
       >
         <Row>
           <Col>
-            <div style={{ display: 'flex', justifyContent: 'space-between'}}>
-            <h1 style={{display: 'inline-block'}}>Chess demo</h1>
-            <h1 style={{display: 'inline-block', textAlign: 'right'}}>{coordinates}</h1>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <h1 style={{ display: "inline-block" }}>Chess demo</h1>
+              <h1 style={{ display: "inline-block", textAlign: "right" }}>
+                {coordinates}
+              </h1>
             </div>
             <section className="info-box">
               <h2>About</h2>
@@ -57,20 +57,46 @@ const Status = ({
             </section>
           </Col>
           <Col>
-            <Row style={{marginRight: 0}}>
-              <section className='info-box'>
-                <button className='basic-button'></button>
+            <Row style={{ marginRight: 0 }}>
+              <section className="info-box">
+                <button
+                  id="toggle-view-button"
+                  onClick={toggleSide}
+                  className="basic-button"
+                >
+                  swap board orientation
+                </button>
               </section>
             </Row>
-            <Row style={{marginRight: 0}}>
-            <section className="info-box">
-              <h3>Board history</h3>
-            </section>
+            <Row style={{ marginRight: 0 }}>
+              <section className="info-box">
+                <h3>Board history</h3>
+                <div className="arrows-holder">
+                  <div className="arrow-box">
+                    <i className="fas fa-angle-double-left arrow" />
+                  </div>
+                  <div className="arrow-box">
+                    <i className="fas fa-angle-left arrow" />
+                  </div>
+                  <div className="arrow-box">
+                    <i className="fas fa-angle-right arrow" />
+                  </div>
+                  <div className="arrow-box">
+                    <i className="fas fa-angle-double-right arrow" />
+                  </div>
+                </div>
+              </section>
             </Row>
           </Col>
         </Row>
 
         <section className="info-box">
+          <h3>
+            Captures:{" "}
+            {whiteCaptures.length < 1 && blackCaptures.length < 1
+              ? "(none)"
+              : null}
+          </h3>
           <Row>
             <Col>
               <DisplayCaptures captures={whiteCaptures} />
@@ -84,30 +110,6 @@ const Status = ({
           </Row>
         </section>
       </Container>
-
-      {/*
-      <div>
-        <DisplayCaptures captures={whiteCaptures} />
-      </div>
-      <div>
-        <DisplayCaptures captures={blackCaptures} />
-      </div>
-      <div>
-        Currently selected: {x}, {y}, {color}
-      </div>
-      <div>position in array: {humanCurrentSelect}</div>
-      <button onClick={toggleSide}>toggle side</button>
-      <button onClick={toggleHover}>show legal moves</button>
-      <button onClick={handleEmpty}>empty board</button>
-      <button onClick={handleSet}>reset board</button>
-      <div>
-        <button onClick={handlePrevMove}>prev move</button>
-        <button onClick={handleNextMove}>next move</button>
-      </div>
-      <div style={{ marginTop: "1em" }}>
-        <AddPieceForm handleAddPiece={handleAddPiece} />
-      </div>
-      * */}
     </>
   );
 };

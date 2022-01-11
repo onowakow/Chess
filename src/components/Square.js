@@ -12,7 +12,6 @@ const Square = ({
   legalMoves,
   handleSelect,
   selectedPiece,
-  isHover,
 }) => {
   // Board rendering messes up x and y. Reorient.
   const orientIndex = (axis, index, boardSide) => {
@@ -92,17 +91,13 @@ const Square = ({
     width: "30%",
     margin: "35%",
     borderRadius: "35%",
-    backgroundColor: `${
-      isHover ? (move !== false ? "blue" : squareColor) : null
-    }`,
+    backgroundColor: `${move !== false ? "blue" : squareColor}`,
   };
 
   const possibleCapture = {
     height: "100%",
     width: "100%",
-    backgroundColor: `${
-      isHover ? 'red' : null
-    }`,
+    backgroundColor: 'red',
   };
 
   const possibleCaptureTwo = {

@@ -11,6 +11,8 @@ import ResetButton from "./components/ResetButton";
 import { Container, Row, Col } from "react-bootstrap";
 import movePiece from "./utilities/movePiece";
 
+const traditionalBoard = traditional
+
 const blankSelect = {
   legalMoves: null,
   position: null,
@@ -23,20 +25,14 @@ const blankSelect = {
 // specific turn could also be helpful
 
 function App() {
-  const [board, setBoard] = useState([traditional]);
+  const [board, setBoard] = useState([traditional()]);
   const [currentHover, setCurrentHover] = useState([]);
 
   // Keeps track of win (false, 'w', or 'b')
   const [win, setWin] = useState(false);
 
-  // Set if board can be edited.
-  const [isReadOnly, setIsReadOnly] = useState(false);
-
   // current turn in the game.
   const [turn, setTurn] = useState("w");
-
-  // toggle hover displaying possible plays on board
-  const [isHover, setIsHover] = useState(true);
 
   // tracks when a player selects own piece
   const [ownSelect, setOwnSelect] = useState(blankSelect);
@@ -50,20 +46,26 @@ function App() {
   const [whiteCaptures, setWhiteCaptures] = useState([]);
   const [blackCaptures, setBlackCaptures] = useState([]);
 
-  const latestBoardIndex = board.length - 1;
+  const boardIndex = board.length - 1;
 
   const toggleSide = () => {
     setBoardSide(boardSide === "w" ? "b" : "w");
   };
 
-  const toggleHover = () => {
-    setIsHover(isHover ? false : true);
-  };
-
   const handleAddPiece = (color, piece, x, y) => {
-    const updatedBoard = placePiece(board[latestBoardIndex], color, piece, x, y)
+    const updatedBoard = placePiece(board[boardIndex], color, piece, x, y)
     setBoard([...board, updatedBoard]);
   };
+
+  const handleNewGame = () => {
+    setBoard([traditional()])
+    setWin(false)
+    setOwnSelect(blankSelect)
+    setTurn('w')
+    setLegalMoves([])
+    setWhiteCaptures([])
+    setBlackCaptures([])
+  }
 
   // allows user to switch between boards
   const handlePrevMove = () => {
@@ -82,7 +84,7 @@ function App() {
     piece
   ) => {
     // Stops handleSelect from modifying the board. For wins and history.
-    if (isReadOnly === true || win !== false) {
+    if (win !== false) {
       return
     }
   
@@ -102,12 +104,12 @@ function App() {
       }
   
       setLegalMoves(
-        calculatePossibleMoves(board[latestBoardIndex], piece, x, y, color)
+        calculatePossibleMoves(board[boardIndex], piece, x, y, color)
       );
   
       setOwnSelect({
         legalMoves: calculatePossibleMoves(
-          board[latestBoardIndex],
+          board[boardIndex],
           piece,
           x,
           y,
@@ -146,13 +148,12 @@ function App() {
   
             // check if King has been captured.
             if (piece === "K") {
-              console.log(turn, "wins");
               setWin(turn)
             }
           }
   
           const updatedBoard = movePiece(
-            board[latestBoardIndex],
+            board[boardIndex],
             ownColor,
             ownPiece,
             ownOrigin,
@@ -176,7 +177,7 @@ function App() {
     if (ownSelect.position === null) {
       if (color !== undefined) {
         setLegalMoves(
-          calculatePossibleMoves(board[latestBoardIndex], type, x, y, color)
+          calculatePossibleMoves(board[boardIndex], type, x, y, color)
         );
       } else {
         setLegalMoves([]);
@@ -206,16 +207,15 @@ function App() {
         <Col className="justify-content-center">
           <Board
             turn={turn}
-            isHover={isHover}
             selectedPiece={ownSelect.position}
             legalMoves={legalMoves}
             boardSide={boardSide}
-            board={board[latestBoardIndex]}
+            board={board[boardIndex]}
             handleSelect={handleSelect}
             handleHover={handleHover}
           />
           <TurnDisplay win={win} turn={turn} />
-          <ResetButton win={win} />
+          <ResetButton handleNewGame={handleNewGame} win={win} />
         </Col>
         <Col>
           <Status
@@ -223,7 +223,6 @@ function App() {
             handleNextMove={handleNextMove}
             blackCaptures={blackCaptures}
             whiteCaptures={whiteCaptures}
-            toggleHover={toggleHover}
             toggleSide={toggleSide}
             algebraicCurrentHover={algebraicCurrentHover}
             currentHover={currentHover}

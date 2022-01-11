@@ -8,7 +8,6 @@ const Board = ({
   boardSide,
   legalMoves,
   handleSelect,
-  isHover,
 }) => {
   const orientBoard = ({ boardSide }) => {
     if (boardSide === "w") {
@@ -42,7 +41,6 @@ const Board = ({
               return (
                 <Square
                   key={ix}
-                  isHover={isHover}
                   selectedPiece={selectedPiece}
                   legalMoves={legalMoves}
                   ix={ix}
