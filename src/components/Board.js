@@ -1,4 +1,5 @@
 import Square from "./Square";
+import orientBoard from "../utilities/orientBoard";
 
 const Board = ({
   turn,
@@ -10,13 +11,8 @@ const Board = ({
   handleSelect,
 }) => {
 
-  const orientBoard = ({ boardSide }) => {
-    if (boardSide === "w") {
-      return board.slice(0).reverse();
-    } else {
-      return board.slice(0).map((row) => row.slice(0).reverse());
-    }
-  };
+  // Async problems with restarting game. Perhaps an oriented board could be made
+  // with useEffect
 
   return (
     <div
@@ -33,7 +29,7 @@ const Board = ({
         borderRadius: "3px",
       }}
     >
-      {orientBoard({ boardSide }).map((row, iy) => {
+      {orientBoard(boardSide, board).map((row, iy) => {
         return (
           <div key={iy} className="rail" style={{ height: "12.5%" }}>
             {row.map((square, ix) => {

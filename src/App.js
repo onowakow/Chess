@@ -1,6 +1,6 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useState, useEffect } from "react";
-import Status from "./components/Status";
+import Config from "./components/Config";
 import Board from "./components/Board";
 import empty from "./presets/empty";
 import traditional from "./presets/traditional";
@@ -24,7 +24,7 @@ const blankSelect = {
 // specific turn could also be helpful
 
 function App() {
-  const [board, setBoard] = useState([traditional()]);
+  const [board, setBoard] = useState([traditional]);
   const [currentHover, setCurrentHover] = useState([]);
 
   // Keeps track of win (false, 'w', or 'b')
@@ -55,19 +55,36 @@ function App() {
   const handleBoardHistory = (direction) => {
     const mostRecentBoardIndex = board.length - 1;
 
-    if (board.length > 1) {
-      if (direction === -1 && boardIndex > 0) {
-        setBoardIndex(boardIndex - 1);
-        setReadOnly(true)
-      }
+    // No history if only a single board.
+    if (mostRecentBoardIndex === 0) {
+      return;
+    }
 
-      if (direction === 1 && boardIndex < mostRecentBoardIndex) {
-        setBoardIndex(boardIndex + 1)
-        if (boardIndex + 1 === mostRecentBoardIndex) {
-          setReadOnly(false)
-        }
+    // Allow user to view previous board if current index is greater than 0
+    if (direction === -1 && boardIndex > 0) {
+      setBoardIndex(boardIndex - 1);
+      setReadOnly(true);
+    }
+
+    // Allow user to view more current board if current index is less than max index.
+    if (direction === 1 && boardIndex < mostRecentBoardIndex) {
+      setBoardIndex(boardIndex + 1);
+      if (boardIndex + 1 === mostRecentBoardIndex) {
+        setReadOnly(false);
       }
     }
+
+    // User can skip to oldest if current index is not 0
+    if (direction === -2) {
+      setBoardIndex(0)
+      setReadOnly(true)
+    }
+
+    if (direction === 2) {
+      setBoardIndex(mostRecentBoardIndex)
+      setReadOnly(false)
+    }
+
   };
 
   const toggleSide = () => {
@@ -85,7 +102,7 @@ function App() {
   };
 
   const handleNewGame = () => {
-    setBoard([traditional()]);
+    setBoard([traditional]);
     setWin(false);
     setOwnSelect(blankSelect);
     setTurn("w");
@@ -248,7 +265,8 @@ function App() {
             <ResetButton handleNewGame={handleNewGame} win={win} />
           </Col>
           <Col>
-            <Status
+            <Config
+              readOnly={readOnly}
               handleBoardHistory={handleBoardHistory}
               handlePrevMove={handlePrevMove}
               handleNextMove={handleNextMove}
@@ -269,13 +287,9 @@ function App() {
 }
 
 /* To do:
-  -Make UI nicer
-  -Allow user to go through past board states
   -Win is announced and game play stops
   -Castling?
   -In progress game
-  -Adjustable board size?
-  -Tell user whose turn it is.
 */
 
 export default App;

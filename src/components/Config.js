@@ -1,17 +1,18 @@
 import AddPieceForm from "./AddPieceForm";
 import DisplayCaptures from "./DisplayCaptures";
+import BoardHistory from "./BoardHistory";
 import { Container, Row, Col } from "react-bootstrap";
+import SwapBoardOrientation from "./SwapBoardOrientation";
 
-const Status = ({
+const Config = ({
   currentHover,
   algebraicCurrentHover,
-  handleEmpty,
-  handleSet,
   handleAddPiece,
   toggleSide,
   blackCaptures,
   whiteCaptures,
   handleBoardHistory,
+  readOnly,
 }) => {
   const [x, y] = algebraicCurrentHover;
 
@@ -51,47 +52,14 @@ const Status = ({
 
         <Row>
           <Col>
-            <section className="info-box">
-              <h3>Add piece to board</h3>
-              <AddPieceForm handleAddPiece={handleAddPiece} />
-            </section>
+            <AddPieceForm readOnly={readOnly} handleAddPiece={handleAddPiece} />
           </Col>
           <Col>
             <Row style={{ marginRight: 0 }}>
-              <section className="info-box">
-                <button
-                  id="toggle-view-button"
-                  onClick={toggleSide}
-                  className="basic-button"
-                >
-                  swap board orientation
-                </button>
-              </section>
+              <SwapBoardOrientation toggleSide={toggleSide} />
             </Row>
             <Row style={{ marginRight: 0 }}>
-              <section className="info-box">
-                <h3>Board history</h3>
-                <div className="arrows-holder">
-                  <div className="arrow-box">
-                    <i className="fas fa-angle-double-left arrow" />
-                  </div>
-
-                  <div
-                    onClick={()=>handleBoardHistory(-1)}
-                    className="arrow-box"
-                  >
-                    <i className="fas fa-angle-left arrow" />
-                  </div>
-                  <div
-                    onClick={()=>handleBoardHistory(1)} 
-                    className="arrow-box">
-                    <i className="fas fa-angle-right arrow" />
-                  </div>
-                  <div className="arrow-box">
-                    <i className="fas fa-angle-double-right arrow" />
-                  </div>
-                </div>
-              </section>
+              <BoardHistory handleBoardHistory={handleBoardHistory} />
             </Row>
           </Col>
         </Row>
@@ -120,4 +88,4 @@ const Status = ({
   );
 };
 
-export default Status;
+export default Config;
