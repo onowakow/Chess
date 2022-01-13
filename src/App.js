@@ -1,5 +1,5 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Status from "./components/Status";
 import Board from "./components/Board";
 import empty from "./presets/empty";
@@ -10,8 +10,7 @@ import TurnDisplay from "./components/TurnDisplay";
 import ResetButton from "./components/ResetButton";
 import { Container, Row, Col } from "react-bootstrap";
 import movePiece from "./utilities/movePiece";
-
-const traditionalBoard = traditional
+import deepCopyBoard from "./utilities/deepCopyBoard";
 
 const blankSelect = {
   legalMoves: null,
@@ -31,14 +30,15 @@ function App() {
   // Keeps track of win (false, 'w', or 'b')
   const [win, setWin] = useState(false);
 
+  // Stops user from making moves
+  const [readOnly, setReadOnly] = useState(false);
+
   // current turn in the game.
   const [turn, setTurn] = useState("w");
 
   // tracks when a player selects own piece
   const [ownSelect, setOwnSelect] = useState(blankSelect);
-
-  // not a completely necessary state. may refactor later
-  const [algebraicCurrentHover, setAlgebraicCurrentHover] = useState(['A', 1]);
+  const [algebraicCurrentHover, setAlgebraicCurrentHover] = useState(["A", 1]);
   const [boardSide, setBoardSide] = useState("w");
   const [legalMoves, setLegalMoves] = useState([]);
 
@@ -46,26 +46,53 @@ function App() {
   const [whiteCaptures, setWhiteCaptures] = useState([]);
   const [blackCaptures, setBlackCaptures] = useState([]);
 
-  const boardIndex = board.length - 1;
+  const [boardIndex, setBoardIndex] = useState(0);
+
+  useEffect(() => {
+    setBoardIndex(board.length - 1);
+  }, [board.length]);
+
+  const handleBoardHistory = (direction) => {
+    const mostRecentBoardIndex = board.length - 1;
+
+    if (board.length > 1) {
+      if (direction === -1 && boardIndex > 0) {
+        setBoardIndex(boardIndex - 1);
+        setReadOnly(true)
+      }
+
+      if (direction === 1 && boardIndex < mostRecentBoardIndex) {
+        setBoardIndex(boardIndex + 1)
+        if (boardIndex + 1 === mostRecentBoardIndex) {
+          setReadOnly(false)
+        }
+      }
+    }
+  };
 
   const toggleSide = () => {
     setBoardSide(boardSide === "w" ? "b" : "w");
   };
 
   const handleAddPiece = (color, piece, x, y) => {
-    const updatedBoard = placePiece(board[boardIndex], color, piece, x, y)
+    if (readOnly === true) {
+      return;
+    }
+    const boardCopy = deepCopyBoard(board[boardIndex]);
+
+    const updatedBoard = placePiece(boardCopy, color, piece, x, y);
     setBoard([...board, updatedBoard]);
   };
 
   const handleNewGame = () => {
-    setBoard([traditional()])
-    setWin(false)
-    setOwnSelect(blankSelect)
-    setTurn('w')
-    setLegalMoves([])
-    setWhiteCaptures([])
-    setBlackCaptures([])
-  }
+    setBoard([traditional()]);
+    setWin(false);
+    setOwnSelect(blankSelect);
+    setTurn("w");
+    setLegalMoves([]);
+    setWhiteCaptures([]);
+    setBlackCaptures([]);
+  };
 
   // allows user to switch between boards
   const handlePrevMove = () => {
@@ -77,36 +104,31 @@ function App() {
   const handleNextMove = () => {};
 
   // ************Game play*******************************
-  const handleSelect = (
-    x, 
-    y, 
-    color, 
-    piece
-  ) => {
+  const handleSelect = (x, y, color, piece) => {
     // Stops handleSelect from modifying the board. For wins and history.
-    if (win !== false) {
-      return
+    if (win !== false || readOnly === true) {
+      return;
     }
-  
+
     // if player selects own color set ownSelect.
     if (color === turn) {
       const origin = [x, y];
-  
+
       // if a piece has already been selected
       if (ownSelect.position !== null) {
         const [prevSelectX, prevSelectY] = ownSelect.position;
-  
+
         // if player selects same piece twice, deselect.
         if (prevSelectX === x && prevSelectY === y) {
           setOwnSelect(blankSelect);
           return;
         }
       }
-  
+
       setLegalMoves(
         calculatePossibleMoves(board[boardIndex], piece, x, y, color)
       );
-  
+
       setOwnSelect({
         legalMoves: calculatePossibleMoves(
           board[boardIndex],
@@ -129,7 +151,7 @@ function App() {
         const legalMove = ownSelect.legalMoves.find(
           (move) => move[0] === x && move[1] === y
         );
-  
+
         // if LEGAL move is made
         if (legalMove !== undefined) {
           // created new vars to hopefully improve readability
@@ -137,7 +159,7 @@ function App() {
           const ownPiece = ownSelect.piece;
           const ownColor = ownSelect.color;
           const destination = [x, y];
-  
+
           // Check if legal move is a capture
           if (legalMove[2] === "c") {
             if (turn === "w") {
@@ -145,21 +167,25 @@ function App() {
             } else {
               setWhiteCaptures([...whiteCaptures, [piece, color]]);
             }
-  
+
             // check if King has been captured.
             if (piece === "K") {
-              setWin(turn)
+              setWin(turn);
             }
           }
-  
+
+          const boardCopyForHistory = deepCopyBoard(board);
+          const boardCopyForUpdate = deepCopyBoard(board);
+
           const updatedBoard = movePiece(
-            board[boardIndex],
+            boardCopyForUpdate[boardIndex],
             ownColor,
             ownPiece,
             ownOrigin,
             destination
           );
-          setBoard([...board, updatedBoard]);
+
+          setBoard([...boardCopyForHistory, updatedBoard]);
           setOwnSelect(blankSelect);
           setLegalMoves([]);
           setTurn(turn === "w" ? "b" : "w");
@@ -169,7 +195,7 @@ function App() {
       }
     }
   };
-  
+
   // ************Game play above**************************
 
   // Displays legalMoves only if isHover and if a piece is not selected
@@ -202,44 +228,50 @@ function App() {
   // To orient for black, a reverse is made only on the columns
 
   return (
-    <Container>
-      <Row>
-        <Col className="justify-content-center">
-          <Board
-            turn={turn}
-            selectedPiece={ownSelect.position}
-            legalMoves={legalMoves}
-            boardSide={boardSide}
-            board={board[boardIndex]}
-            handleSelect={handleSelect}
-            handleHover={handleHover}
-          />
-          <TurnDisplay win={win} turn={turn} />
-          <ResetButton handleNewGame={handleNewGame} win={win} />
-        </Col>
-        <Col>
-          <Status
-            handlePrevMove={handlePrevMove}
-            handleNextMove={handleNextMove}
-            blackCaptures={blackCaptures}
-            whiteCaptures={whiteCaptures}
-            toggleSide={toggleSide}
-            algebraicCurrentHover={algebraicCurrentHover}
-            currentHover={currentHover}
-            handleEmpty={handleEmpty}
-            handleSet={handleSet}
-            handleAddPiece={handleAddPiece}
-          />
-        </Col>
-      </Row>
-    </Container>
+    <>
+      <header>
+        <h1>Chess demo</h1>
+      </header>
+      <Container>
+        <Row>
+          <Col className="justify-content-center">
+            <Board
+              turn={turn}
+              selectedPiece={ownSelect.position}
+              legalMoves={legalMoves}
+              boardSide={boardSide}
+              board={board[boardIndex]}
+              handleSelect={handleSelect}
+              handleHover={handleHover}
+            />
+            <TurnDisplay win={win} turn={turn} readOnly={readOnly} />
+            <ResetButton handleNewGame={handleNewGame} win={win} />
+          </Col>
+          <Col>
+            <Status
+              handleBoardHistory={handleBoardHistory}
+              handlePrevMove={handlePrevMove}
+              handleNextMove={handleNextMove}
+              blackCaptures={blackCaptures}
+              whiteCaptures={whiteCaptures}
+              toggleSide={toggleSide}
+              algebraicCurrentHover={algebraicCurrentHover}
+              currentHover={currentHover}
+              handleEmpty={handleEmpty}
+              handleSet={handleSet}
+              handleAddPiece={handleAddPiece}
+            />
+          </Col>
+        </Row>
+      </Container>
+    </>
   );
 }
 
 /* To do:
   -Make UI nicer
   -Allow user to go through past board states
-  -Win is announced and gameplay stops
+  -Win is announced and game play stops
   -Castling?
   -In progress game
   -Adjustable board size?

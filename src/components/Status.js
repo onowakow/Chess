@@ -11,8 +11,7 @@ const Status = ({
   toggleSide,
   blackCaptures,
   whiteCaptures,
-  handlePrevMove,
-  handleNextMove,
+  handleBoardHistory,
 }) => {
   const [x, y] = algebraicCurrentHover;
 
@@ -34,7 +33,7 @@ const Status = ({
         <Row>
           <Col>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <h1 style={{ display: "inline-block" }}>Chess demo</h1>
+              <h1 style={{ display: "inline-block" }}>Configure board</h1>
               <h1 style={{ display: "inline-block", textAlign: "right" }}>
                 {coordinates}
               </h1>
@@ -44,7 +43,8 @@ const Status = ({
               This app demonstrates a responsive chess board. Piece movement is
               limited to only legal possibilities. When hovering over a piece,
               the legal moves are shown by dots while legal captures are shown
-              by corner accents.
+              by corner accents. Play around with the board and see its
+              capabilities!
             </section>
           </Col>
         </Row>
@@ -75,10 +75,16 @@ const Status = ({
                   <div className="arrow-box">
                     <i className="fas fa-angle-double-left arrow" />
                   </div>
-                  <div className="arrow-box">
+
+                  <div
+                    onClick={()=>handleBoardHistory(-1)}
+                    className="arrow-box"
+                  >
                     <i className="fas fa-angle-left arrow" />
                   </div>
-                  <div className="arrow-box">
+                  <div
+                    onClick={()=>handleBoardHistory(1)} 
+                    className="arrow-box">
                     <i className="fas fa-angle-right arrow" />
                   </div>
                   <div className="arrow-box">
@@ -92,7 +98,7 @@ const Status = ({
 
         <section className="info-box">
           <h3>
-            Captures:{" "}
+            Current captures:{" "}
             {whiteCaptures.length < 1 && blackCaptures.length < 1
               ? "(none)"
               : null}

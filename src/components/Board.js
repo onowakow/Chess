@@ -9,6 +9,7 @@ const Board = ({
   legalMoves,
   handleSelect,
 }) => {
+
   const orientBoard = ({ boardSide }) => {
     if (boardSide === "w") {
       return board.slice(0).reverse();

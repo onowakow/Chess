@@ -1,9 +1,17 @@
-h1 {
-  font-size: 1.75em !important;
-}
-
 #root {
   padding-bottom: 1em
+}
+
+header {
+  display: flex;
+  align-items: center;
+  padding-left: 1em;
+  background-color: bisque;
+  height: 6vh
+}
+
+h1 {
+  font-size: 1.75em !important;
 }
 
 h2 {
