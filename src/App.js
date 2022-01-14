@@ -103,6 +103,7 @@ function App() {
 
   const handleNewGame = () => {
     setBoard([traditional]);
+    setBoardIndex(0)
     setWin(false);
     setOwnSelect(blankSelect);
     setTurn("w");

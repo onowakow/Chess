@@ -11,9 +11,6 @@ const Board = ({
   handleSelect,
 }) => {
 
-  // Async problems with restarting game. Perhaps an oriented board could be made
-  // with useEffect
-
   return (
     <div
       id="board"
